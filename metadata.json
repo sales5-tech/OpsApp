@@ -1,0 +1,5 @@
+{
+  "name": "OpsApp",
+  "description": "نظام OpsApp المتكامل لإدارة وتسجيل حركة العينات والهدايا ومذكرات التسليم مع تقارير وتكامل مع Google Sheets.",
+  "requestFramePermissions": []
+}

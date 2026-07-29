@@ -1,0 +1,195 @@
+{
+  "entities": {
+    "ItemDetail": {
+      "title": "Item Detail",
+      "description": "Details of an individual item in a transaction",
+      "type": "object",
+      "properties": {
+        "item_code": { "type": "string", "description": "The unique code of the item" },
+        "item_name": { "type": "string", "description": "The name of the item" },
+        "quantity": { "type": "number", "description": "The quantity of the item" },
+        "status": { "type": "string", "enum": ["تم إصدار الفاتورة", "تم الإرجاع", "لم يتم الإرجاع"], "description": "The status of the item" }
+      },
+      "required": ["item_code", "item_name", "quantity", "status"]
+    },
+    "Item": {
+      "title": "Item Record",
+      "description": "A record of sample movement containing multiple items",
+      "type": "object",
+      "properties": {
+        "items": { "type": "array", "items": { "$ref": "ItemDetail" }, "description": "List of items in this record" },
+        "item_type": { "type": "string", "enum": ["هدية", "عينة", "مذكرة تسليم"], "description": "The type of movement" },
+        "representative_name": { "type": "string", "description": "Name of the representative" },
+        "customer_id": { "type": "string", "description": "ID of the customer" },
+        "customer_name": { "type": "string", "description": "Name of the customer" },
+        "date": { "type": "string", "format": "date", "description": "Date of the transaction" },
+        "notes": { "type": "string", "description": "Optional notes" },
+        "createdBy": { "type": "string", "description": "UID of the user who created the record" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp of creation" }
+      },
+      "required": ["items", "item_type", "representative_name", "customer_id", "customer_name", "date", "createdBy", "createdAt"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Customer information",
+      "type": "object",
+      "properties": {
+        "customer_id": { "type": "string", "description": "Unique customer ID" },
+        "customer_name": { "type": "string", "description": "Name of the customer" }
+      },
+      "required": ["customer_id", "customer_name"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Product information",
+      "type": "object",
+      "properties": {
+        "item_code": { "type": "string", "description": "Unique item code" },
+        "item_name": { "type": "string", "description": "Name of the item" },
+        "pieces_per_set": { "type": "number", "description": "Number of pieces if it is a set" }
+      },
+      "required": ["item_code", "item_name"]
+    },
+    "ReturnRequest": {
+      "title": "Return Request",
+      "description": "Requests made by reps to return samples",
+      "type": "object",
+      "properties": {
+        "deliveryNoteId": { "type": "string", "description": "Parent delivery note ID" },
+        "itemIndex": { "type": "number", "description": "Index of the item in the items array" },
+        "item_code": { "type": "string" },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+        "requestedBy": { "type": "string" },
+        "requestedByName": { "type": "string" },
+        "requestedAt": { "type": "string", "format": "date-time" },
+        "processedBy": { "type": "string" },
+        "processedAt": { "type": "string", "format": "date-time" },
+        "adminNotes": { "type": "string" }
+      },
+      "required": ["deliveryNoteId", "itemIndex", "status", "requestedBy", "requestedAt"]
+    },
+    "AuditLog": {
+      "title": "Audit Log",
+      "description": "Logs for tracking system operations",
+      "type": "object",
+      "properties": {
+        "action": { "type": "string", "description": "Action performed (e.g., 'OUT', 'RETURN_REQUEST', 'APPROVE')" },
+        "details": { "type": "string" },
+        "performedBy": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "relatedId": { "type": "string" }
+      },
+      "required": ["action", "performedBy", "timestamp"]
+    },
+    "SharedLink": {
+      "title": "Shared Link",
+      "description": "Information for public shared links",
+      "type": "object",
+      "properties": {
+        "token": { "type": "string", "description": "Unique secure token" },
+        "itemId": { "type": "string", "description": "ID of the item being shared" },
+        "expiryDate": { "type": "string", "format": "date-time", "description": "When the link expires" },
+        "viewCount": { "type": "number", "description": "Number of times the link was accessed" },
+        "active": { "type": "boolean", "description": "Whether the link is still valid" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["token", "itemId", "active", "createdAt"]
+    },
+    "Supplier": {
+      "title": "Supplier",
+      "description": "Supplier contact information",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "contact_person": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "SupplierSample": {
+      "title": "Supplier Sample",
+      "description": "A record of a sample received from a supplier",
+      "type": "object",
+      "properties": {
+        "refId": { "type": "string" },
+        "receiveDate": { "type": "string" },
+        "supplierName": { "type": "string" },
+        "itemName": { "type": "string" },
+        "itemCode": { "type": "string" },
+        "description": { "type": "string" },
+        "quantity": { "type": "number" },
+        "unit": { "type": "string" },
+        "sampleType": { "type": "string" },
+        "location": { "type": "string" },
+        "receivedBy": { "type": "string" },
+        "status": { "type": "string" },
+        "returnDate": { "type": "string" },
+        "notes": { "type": "string" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["refId", "receiveDate", "supplierName", "itemName", "quantity", "unit", "sampleType", "location", "status", "createdBy", "createdAt"]
+    },
+    "SupplierSampleMovement": {
+      "title": "Supplier Sample Movement",
+      "description": "Log timeline for sample movement and audit trail",
+      "type": "object",
+      "properties": {
+        "sampleId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "performedBy": { "type": "string" },
+        "performedByName": { "type": "string" },
+        "actionType": { "type": "string" },
+        "description": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["sampleId", "timestamp", "performedBy", "performedByName", "actionType", "description"]
+    },
+    "BranchRequestItem": {
+      "title": "Branch Request Item",
+      "description": "An item in a branch preparation request",
+      "type": "object",
+      "properties": {
+        "item_code": { "type": "string", "description": "The unique code of the item" },
+        "item_name": { "type": "string", "description": "The name of the item" },
+        "quantity": { "type": "number", "description": "Requested quantity" },
+        "notes": { "type": "string", "description": "Optional notes/merging logs for this item" }
+      },
+      "required": ["item_code", "item_name", "quantity"]
+    },
+    "BranchRequest": {
+      "title": "Branch Request",
+      "description": "A preparation request from a company branch",
+      "type": "object",
+      "properties": {
+        "request_number": { "type": "string", "description": "Auto-generated request number" },
+        "branch_name": { "type": "string", "description": "Name of the requesting branch" },
+        "request_date": { "type": "string", "format": "date", "description": "Date of the request" },
+        "status": { "type": "string", "enum": ["معلق", "قيد التجهيز", "جاهز للتسليم", "تم التسليم للعميل", "ملغي", "مكتمل"], "description": "The status of the request" },
+        "items": { "type": "array", "items": { "$ref": "BranchRequestItem" }, "description": "List of requested items" },
+        "notes": { "type": "string", "description": "General notes" },
+        "total_quantity": { "type": "number", "description": "Sum of all item quantities" },
+        "createdBy": { "type": "string", "description": "UID of the creator" },
+        "createdByName": { "type": "string", "description": "Name of the creator" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" }
+      },
+      "required": ["request_number", "branch_name", "request_date", "status", "items", "total_quantity", "createdBy", "createdByName", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/items/{itemId}": { "schema": "Item", "description": "Collection of sample movement records" },
+    "/trash/{trashId}": { "schema": "Item", "description": "Collection of deleted records" },
+    "/customers/{customerId}": { "schema": "Customer", "description": "Collection of customers" },
+    "/products/{productId}": { "schema": "Product", "description": "Collection of products" },
+    "/shared_links/{linkId}": { "schema": "SharedLink", "description": "Collection of public shared links" },
+    "/return_requests/{requestId}": { "schema": "ReturnRequest", "description": "Requests for sample returns" },
+    "/audit_logs/{logId}": { "schema": "AuditLog", "description": "System operation logs" },
+    "/suppliers/{supplierId}": { "schema": "Supplier", "description": "Collection of suppliers" },
+    "/supplier_samples/{sampleId}": { "schema": "SupplierSample", "description": "Collection of supplier samples" },
+    "/supplier_sample_movements/{movementId}": { "schema": "SupplierSampleMovement", "description": "Timeline log of supplier sample updates" },
+    "/branch_requests/{requestId}": { "schema": "BranchRequest", "description": "Collection of branch preparation requests" }
+  }
+}

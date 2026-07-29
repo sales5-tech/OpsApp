@@ -1,0 +1,105 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function hasValidDomain() {
+      return isAuthenticated() && request.auth.token.email.matches('^.*@qasralawani\\.com$');
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email == "sales5@qasralawani.com" ||
+        request.auth.token.email == "sales@qasralawani.com"
+      );
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Items Collection
+    match /items/{itemId} {
+      allow read: if hasValidDomain();
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Customers Collection
+    match /customers/{customerId} {
+      allow read: if hasValidDomain();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Products Collection
+    match /products/{productId} {
+      allow read: if hasValidDomain();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Audit Logs
+    match /audit_logs/{logId} {
+      allow read: if hasValidDomain();
+      allow create: if hasValidDomain(); // Allow viewers to log actions if they perform any (e.g. status change requests)
+      allow update, delete: if isAdmin();
+    }
+
+    // Return Requests
+    match /return_requests/{requestId} {
+      allow read: if hasValidDomain();
+      allow create: if hasValidDomain();
+      allow update, delete: if isAdmin();
+    }
+
+    // Trash
+    match /trash/{trashId} {
+      allow read: if hasValidDomain();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Users
+    match /users/{userId} {
+      allow read: if hasValidDomain();
+      allow write: if isAdmin();
+    }
+    
+    // Shared Links
+    match /shared_links/{linkId} {
+      allow read: if true; // Public access for shared links
+      allow write: if isAdmin();
+    }
+
+    // Suppliers Collection
+    match /suppliers/{supplierId} {
+      allow read: if hasValidDomain();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Supplier Samples Collection
+    match /supplier_samples/{sampleId} {
+      allow read: if hasValidDomain();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Supplier Sample Movements (Log Timeline)
+    match /supplier_sample_movements/{movementId} {
+      allow read: if hasValidDomain();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Branch Requests & Orders (Preparation requests from branches)
+    match /branch_requests/{requestId} {
+      allow read: if hasValidDomain();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /branch_orders/{orderId} {
+      allow read: if hasValidDomain();
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}
